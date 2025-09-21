@@ -1,0 +1,296 @@
+<!--
+  hacker-theme-demo/index.html
+  PURPOSE: Harmless, decorative "hacker-themed" landing page for demos, portfolios, CTFs, or personal sites.
+  DO NOT USE THIS TO DEFACE OR ATTACK OTHERS' SITES. Host only on sites you own or in authorized labs.
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hacker Theme — Demo</title>
+  <style>
+    :root{
+      --bg:#020204;
+      --neon:#00ffea;
+      --accent:#ff3b61;
+      --muted:#98a0a6;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+    body{
+      background: radial-gradient(ellipse at 20% 10%, rgba(0,255,170,0.04), transparent 10%),
+                  radial-gradient(ellipse at 80% 90%, rgba(255,60,100,0.03), transparent 10%),
+                  var(--bg);
+      color:#e6eef6;
+      overflow:hidden;
+    }
+
+    /* Matrix rain canvas sits behind everything */
+    #matrix { position:fixed; inset:0; z-index:0; }
+
+    .wrap{
+      position:relative; z-index:2;
+      display:grid;
+      place-items:center;
+      min-height:100vh;
+      padding:40px;
+      box-sizing:border-box;
+    }
+
+    .card{
+      width:min(1000px, 94%);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.04);
+      border-left: 1px solid rgba(0,255,170,0.06);
+      border-radius:14px;
+      padding:28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px) saturate(1.1);
+      display:grid;
+      grid-template-columns: 1fr 320px;
+      gap:20px;
+      align-items:start;
+    }
+
+    /* Left main */
+    .main h1{
+      margin:0 0 6px 0;
+      font-size:38px;
+      letter-spacing:1px;
+      line-height:1;
+      color:var(--neon);
+      text-shadow:
+        0 0 6px rgba(0,255,234,0.12),
+        0 4px 12px rgba(0,0,0,0.8);
+    }
+
+    .glitch{
+      position:relative;
+      display:inline-block;
+    }
+    /* layered glitch effect */
+    .glitch::before, .glitch::after{
+      content:attr(data-text);
+      position:absolute;
+      left:0; top:0;
+      width:100%;
+      clip-path: inset(0 0 0 0);
+      mix-blend-mode: screen;
+      opacity:0.85;
+      animation:glitch 2.5s infinite linear;
+    }
+    .glitch::before{ transform:translate(-2px, -1px) skew(-0.5deg); color:#ff6b9a; opacity:0.6; animation-direction:normal; }
+    .glitch::after{ transform:translate(2px, 1px) skew(0.5deg); color:#00ffd3; opacity:0.6; animation-delay:0.2s; animation-direction:reverse;}
+
+    @keyframes glitch {
+      0%{ clip-path: inset(0 0 0 0); transform:translate(0)}
+      5%{ clip-path: inset(0 0 70% 0); transform:translate(-4px, -2px)}
+      10%{ clip-path: inset(30% 0 0 0); transform:translate(3px,2px)}
+      15%{ clip-path: inset(0 0 40% 0); transform:translate(-2px,0)}
+      20%{ clip-path: inset(0 30% 0 0); transform:translate(0)}
+      100%{ clip-path: inset(0 0 0 0); transform:translate(0)}
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    pre.console{
+      margin-top:16px;
+      background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(255,255,255,0.01));
+      border-radius:8px;
+      padding:14px;
+      font-family: "Courier New", monospace;
+      font-size:13px;
+      color:#b7fef0;
+      max-height:260px;
+      overflow:auto;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+
+    /* Right sidebar */
+    .sidebar{
+      padding:14px;
+      border-radius:10px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    }
+    .badge{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      background:rgba(0,0,0,0.25);
+      color:var(--neon);
+      border:1px solid rgba(0,255,170,0.12);
+      margin-bottom:12px;
+    }
+
+    .stat{
+      margin:10px 0;
+      font-size:14px;
+      color:#cfeee8;
+      display:flex; justify-content:space-between; gap:10px;
+      align-items:center;
+    }
+
+    .btn{
+      display:inline-block;
+      margin-top:12px;
+      padding:10px 14px;
+      border-radius:8px;
+      background:linear-gradient(90deg, rgba(0,255,170,0.07), rgba(255,60,100,0.04));
+      color:var(--neon);
+      border:1px solid rgba(0,255,170,0.08);
+      text-decoration:none;
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    footer.note{
+      grid-column:1/-1;
+      margin-top:16px;
+      color:var(--muted);
+      font-size:13px;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+
+    /* responsive */
+    @media (max-width:880px){
+      .card{ grid-template-columns:1fr; }
+      .sidebar{ order:2; width:100%;}
+    }
+
+    /* animated neon underline */
+    .neon-line{
+      height:3px;
+      background:linear-gradient(90deg, transparent, var(--neon), transparent);
+      margin-top:12px;
+      border-radius:2px;
+      animation: pulse 2.5s infinite;
+      opacity:0.9;
+    }
+    @keyframes pulse { 0%{opacity:.2} 50%{opacity:1} 100%{opacity:.2} }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+
+  <div class="wrap">
+    <div class="card" role="main" aria-labelledby="title">
+      <div class="main">
+        <h1 id="title">
+          <span class="glitch" data-text="">Hacked by MacKhushal</span>
+        </h1>
+        <div class="muted">This is a harmless visual demo and placeholder page. For demos, portfolios, and authorized CTFs only.</div>
+
+        <div class="neon-line" aria-hidden="true"></div>
+
+        <pre class="console" id="console" aria-live="polite">
+// Demo console — simulated activity
+<span id="log">Initializing virtual interface…</span>
+        </pre>
+
+        <p class="muted" style="margin-top:10px;">
+          Want to customize the text, colors, or animation? Everything below is editable — it contains no harmful code.
+        </p>
+      </div>
+
+      <aside class="sidebar" aria-label="status panel">
+        <div class="badge">demo-mode</div>
+
+        <div class="stat"><span>Agent</span><strong id="agent">ghost-sys</strong></div>
+        <div class="stat"><span>Location</span><strong id="loc">local</strong></div>
+        <div class="stat"><span>Status</span><strong id="status">simulation</strong></div>
+        <div class="stat"><span>Uptime</span><strong id="uptime">00:00:00</strong></div>
+
+        <button class="btn" id="regen">Regenerate Message</button>
+
+        <div style="margin-top:18px; font-size:12px; color:var(--muted);">
+          <strong style="color:#fff;">Usage:</strong>
+          <div>Use locally. Do not deploy to others' sites without permission.</div>
+        </div>
+      </aside>
+
+      <footer class="note">
+        <div>Made for demo / education</div>
+        <div style="font-family:monospace; color:var(--muted); font-size:12px;">v1.0</div>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // NOTE: This script only produces visual effects and simulated logs.
+    // DO NOT use to attack or deface other websites. Use for demos, CTFs, and personal pages.
+
+    // Matrix rain effect (canvas)
+    (function matrixRain(){
+      const canvas = document.getElementById('matrix');
+      const ctx = canvas.getContext('2d');
+      let w, h, cols, y, fontSize = 14, columns;
+      function resize(){ w = canvas.width = innerWidth; h = canvas.height = innerHeight; cols = Math.floor(w / fontSize); y = Array(cols).fill(0); }
+      addEventListener('resize', resize);
+      resize();
+
+      const chars = '01𐄂╳▓▒░<>/\\|[]{}()=+-*_~#%$@&abcdefghijklmnopqrstuvwxyz'.split('');
+      function draw(){
+        ctx.fillStyle = 'rgba(2,2,4,0.16)';
+        ctx.fillRect(0,0,w,h);
+        ctx.fillStyle = 'rgba(0,255,170,0.75)';
+        ctx.font = fontSize + 'px monospace';
+        for(let i=0;i<cols;i++){
+          const text = chars[Math.floor(Math.random()*chars.length)];
+          ctx.fillText(text, i*fontSize, y[i]*fontSize);
+          if (y[i]*fontSize > h && Math.random() > 0.975) y[i]=0;
+          y[i]++;
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
+    // Simulated console output
+    (function simulatedConsole(){
+      const logEl = document.getElementById('log');
+      const consoleEl = document.getElementById('console');
+      const messages = [
+        '[OK] handshake complete',
+        '[WARN] suspicious pattern detected (demo)',
+        '[INFO] scanning local vectors',
+        '[OK] sandbox active',
+        '[TRACE] latency 14ms',
+        '[SIM] no vulnerabilities exploited (demo only)',
+        '[MSG] Hello, researcher. Customize this message.',
+      ];
+      let i = 0;
+      function push(){
+        const line = messages[i % messages.length];
+        const time = new Date().toLocaleTimeString();
+        consoleEl.innerHTML = `// Demo console — simulated activity\n${time} ${line}\n` + consoleEl.innerHTML;
+        i++;
+      }
+      setInterval(push, 1600);
+
+      // regen button
+      document.getElementById('regen').addEventListener('click', ()=>{
+        const seed = Math.random().toString(36).slice(2,10);
+        document.querySelector('.glitch').setAttribute('data-text', 'DEMO — ' + seed);
+      });
+
+      // uptime counter
+      let start = Date.now();
+      setInterval(()=>{
+        const s = Math.floor((Date.now() - start)/1000);
+        const hh = String(Math.floor(s/3600)).padStart(2,'0');
+        const mm = String(Math.floor((s%3600)/60)).padStart(2,'0');
+        const ss = String(s%60).padStart(2,'0');
+        document.getElementById('uptime').textContent = `${hh}:${mm}:${ss}`;
+      }, 1000);
+    })();
+  </script>
+</body>
+</html>
